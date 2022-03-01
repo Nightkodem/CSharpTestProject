@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using System.Net;
 using System.Linq;
 using System.Collections.Generic;
@@ -9,916 +8,11 @@ using System.Text;
 
 namespace CSharpTestProject
 {
-    public class Human
+    public interface IStartable
     {
-        public string Name
-        {
-            get => _name;
-            set
-            {
-                if (String.IsNullOrEmpty(value)) return;
-                _name = value;
-            }
-        }
-        public string Surname { get; set; }
-        public string PersonalID { get; init; }
-
-        private string _name;
-        public Human()
-        {
-            Console.WriteLine("I'm alive!!!!!!11!1!!111!");
-        }
-
-        public Human(string name, string surname, string personalID)
-            : this()
-        {
-            this.Name = name;
-            this.Surname = surname;
-            this.PersonalID = personalID;
-        }
-
-        public string GetHumanInfo()
-        {
-            return $"Imie = {Name}, nazwisko = {Surname}  (id = {PersonalID})";
-        }
-
-        public static int HumanMain()
-        {
-            var czlek1 = new Human("Marek", "Hucz", "1234");
-            var czlek2 = new Human
-            {
-                Name = "Janek",
-                Surname = "Hucz",
-                PersonalID = "4321"
-            };
-            Console.WriteLine(czlek1.GetHumanInfo());
-
-            czlek1.Name = "Rafał";
-            czlek1.Surname = "Nierafał";
-
-            Console.WriteLine(czlek1.GetHumanInfo());
-
-            Console.ReadKey();
-            return 0;
-        }
+        void Start();
     }
-    public static class ZeroDivision
-    {
-        public static int ZeroDivisionMain()
-        {
-            const float x = 10f;
-            const float zero = 0f;
-            float result = x / zero;
-            int result2 = 3;
 
-            try
-            {
-                Math.DivRem((int)x, (int)zero, out result2);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-
-            Console.WriteLine($"Result2 = {result2},  10f/0f = {10f / 0f}");
-
-            var v = new { Amount = 108, Message = "Hello" };
-
-            Console.WriteLine($"v: {v}, \nType: {v.GetType()}, \nHash: {v.GetHashCode()}");
-
-            Console.ReadKey();
-            return 0;
-        }
-    }
-    public static class GetLineFromString
-    {
-        public static int GetLineFromStringMain()
-        {
-            string content = File.ReadAllText(@"C:\Users\nikod\Temp\CShartProject\TextFile.txt");
-
-            const uint line = 8;
-            Console.WriteLine($"(Alg 1) Linijka {line}: {GetLineFromString.GetLine1(content, line, out long time1)}");
-            Console.WriteLine($"(Alg 2) Linijka {line}: {GetLineFromString.GetLine2(content, line, out long time2)}");
-            Console.WriteLine($"(Alg 3) Linijka {line}: {GetLineFromString.GetLine3(content, line, out long time3)}");
-
-            Console.WriteLine($"Alg 1 czas: {time1}");
-            Console.WriteLine($"Alg 2 czas: {time2}");
-            Console.WriteLine($"Alg 3 czas: {time3}");
-
-
-            Console.ReadKey();
-            return 0;
-        }
-
-        /// <summary>
-        /// Returns string containing a specified line <1, 2, ...> from whole string
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="lineNumber"></param>
-        /// <returns name="line"></returns>
-        public static string GetLine1(in string text, uint lineNumber, out long time)
-        {
-            var watch = new Stopwatch();
-            time = 0;
-
-            watch.Start();
-            if (lineNumber < 1) return String.Empty;
-
-            int count = 1;
-            int i;
-            foreach (char c in text)
-            {
-                if (c == '\n') ++count;
-            }
-
-            if (lineNumber > count) return String.Empty;
-
-            int[] indexesOfEnter = new int[count + 1];
-            indexesOfEnter[0] = -1;
-
-            count = 1;
-            for (i = 0; i < text.Length; ++i)
-            {
-                if (text[i] == '\n')
-                {
-                    indexesOfEnter[count] = i;
-                    ++count;
-                }
-            }
-            indexesOfEnter[count] = text.Length;
-
-            int startIndex = indexesOfEnter[lineNumber - 1] + 1;
-            int lenght = indexesOfEnter[lineNumber] - startIndex;
-            string line = text.Substring(startIndex, lenght);
-            watch.Stop();
-
-            time = watch.ElapsedMilliseconds;
-            return line;
-        }
-
-        /// <summary>
-        /// Returns string containing a specified line <1, 2, ...> from whole string
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="lineNumber"></param>
-        /// <returns name="line"></returns>
-        public static string GetLine2(string text, uint lineNumber, out long time)
-        {
-            var watch = new Stopwatch();
-            time = 0;
-
-            watch.Start();
-            if (lineNumber < 1) return String.Empty;
-
-            string line = text;
-
-            for (int i = 0; i < lineNumber; ++i)
-            {
-                int indexOfNewLine = text.IndexOf('\n');
-                int textLenght = text.Length;
-                bool hasNewLine = indexOfNewLine != -1;
-                int indexOfEndline = (hasNewLine ? indexOfNewLine : textLenght);
-                line = text.Substring(0, indexOfEndline);
-                if (hasNewLine) text = text.Substring(indexOfEndline + 1, textLenght - line.Length - 1);
-                else break;
-            }
-            watch.Stop();
-
-            time = watch.ElapsedMilliseconds;
-            return line;
-        }
-
-        /// <summary>
-        /// Returns string containing a specified line <1, 2, ...> from whole string
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="lineNumber"></param>
-        /// <returns name="line"></returns>
-        public static string GetLine3(string text, uint lineNumber, out long time)
-        {
-            var watch = new Stopwatch();
-            time = 0;
-
-            watch.Start();
-            if (lineNumber < 1) return String.Empty;
-
-            string[] textFileArray = text.Split('\n');
-
-            if (lineNumber > textFileArray.Length) return String.Empty;
-            watch.Stop();
-
-            time = watch.ElapsedMilliseconds;
-            return textFileArray[lineNumber - 1];
-        }
-    }
-    public static class DownloadTest
-    {
-        private static readonly Dictionary<ulong, string> metricPrefixes = new Dictionary<ulong, string>
-            {
-                { 1, "B" },
-                { 1_000, "kB" },
-                { 1_000_000, "MB" },
-                { 1_000_000_000, "GB" },
-                { 1_000_000_000_000, "TB" },
-                { 1_000_000_000_000_000, "PB" }
-            };
-
-        private static readonly string[] TEST_URLS = new string[]
-            {
-                    @"https://example.com/",
-                    @"https://example.org/",
-                    //@"https://play.google.com/store",
-                    @"https://drive.google.com/uc?export=download&id=1P8gf5-DEvSYpFhGDylD6u5yiLXfY8B7T",
-                    @"https://drive.google.com/uc?export=download&id=17Y-obCuaHYbP3dtjkiLYO66SB8UjFQ3f",
-                    @"https://www.blank.org/"
-            };
-
-
-        public static void DownloadTestMain()
-        {
-            var datas = new byte[TEST_URLS.Length][];
-            
-            using (var client = new WebClient())
-            {
-                for (int i = 0; i < TEST_URLS.Length; i++)
-                {
-                    datas[i] = client.DownloadData(TEST_URLS[i]);
-                    Console.WriteLine($"{TEST_URLS[i]} done");
-                }
-            }
-
-            for (int i = 0; i < TEST_URLS.Length; i++)
-            {
-                Console.WriteLine($"Size of site {TEST_URLS[i]} = {GetHumanReadableSize((ulong)datas[i].Length)}  ({datas[i].Length})");
-            }
-        }
-
-        private static string GetHumanReadableSize(ulong size)
-        {
-            foreach (var k in metricPrefixes.Keys)
-            {
-                if (size < k * 1000)
-                {
-                    string prefix = metricPrefixes[k];
-                    if (prefix == "B")
-                    {
-                        return $"{((double)size / k):n0}{prefix}";
-                    }
-                    else
-                    {
-                        return $"{((double)size / k):n2}{prefix}";
-                    }
-                }
-            }
-            return $"{size}B";
-        }
-    }
-    public static class ArrayArithetic
-    {
-        public const int MAX = 100000;
-
-        public static int LongMultiply(int x, byte[] res, int res_size)
-        {
-            int carry = 0;
-
-            for (int i = 0; i < res_size; ++i)
-            {
-                int prod = res[i] * x + carry;
-                res[i] = (byte)(prod % 10);
-                carry = prod / 10;
-            }
-
-            while (carry > 0)
-            {
-                res[res_size] = (byte)(carry % 10);
-                carry /= 10;
-                ++res_size;
-            }
-
-            return res_size;
-        }
-
-        public static void LongPow(int x, int n)
-        {
-            if (n == 0)
-            {
-                Console.Write("1");
-                return;
-            }
-
-            byte[] res = new byte[MAX];
-            int res_size = 0;
-            int temp = x;
-
-            while (temp != 0)
-            {
-                res[res_size++] = (byte)(temp % 10);
-                temp /= 10;
-            }
-
-            for (int i = 2; i <= n; i++) res_size = LongMultiply(x, res, res_size);
-
-            Console.Write($"{x}^{n} = "); for (int i = res_size - 1; i >= 0; i--) Console.Write(res[i]);
-        }
-
-        public static int ArrayAritheticMain()
-        {
-            ArrayArithetic.LongPow(7, 777);
-
-            Console.ReadKey();
-            return 0;
-        }
-    } //Not writen by me
-    public static class StringToTitle
-    {
-        public static string ToTitle(string oldName)
-        {
-            string name = String.Empty;
-            foreach (string w in oldName.Split('_'))
-            {
-                name += Convert.ToString(w[0]).ToUpper() + w.Substring(1) + " ";
-            }
-
-            return name.Trim();
-        }
-
-        public static int StringToTitleMain()
-        {
-            string oldName = "Lost_legacy_lala";
-            string newName = StringToTitle.ToTitle(oldName);
-
-            Console.WriteLine($"Name = {newName}");
-
-            return 0;
-        }
-    }
-    public static class SoundsExtractor
-    {
-        public static string[] ExtractSounds(string line)
-        {
-            string[] sounds = line.Split(new char[1] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-
-            for (byte i = 0; i < sounds.Length; ++i)
-            {
-                sounds[i] = sounds[i].Trim();
-            }
-
-            return sounds;
-        }
-
-        public static int SoundsExtractorMain()
-        {
-            string data1 = "Wind Light, Rain Medium, Waterfall, Fireplace";
-            string data2 = "Scream,,";
-            string data3 = "";
-
-            string[] sounds1 = SoundsExtractor.ExtractSounds(data1);
-            string[] sounds2 = SoundsExtractor.ExtractSounds(data2);
-            string[] sounds3 = SoundsExtractor.ExtractSounds(data3);
-
-            Console.Write($"Sounds in data1: "); foreach (string s in sounds1) { Console.Write($"\"{s}\" "); }
-            Console.WriteLine();
-            Console.Write($"Sounds in data2: "); foreach (string s in sounds2) { Console.Write($"\"{s}\" "); }
-            Console.WriteLine();
-            Console.Write($"Sounds in data3: "); foreach (string s in sounds3) { Console.Write($"\"{s}\" "); }
-            Console.WriteLine();
-
-            Console.ReadKey();
-            return 0;
-        }
-    }
-    public static class GetAnimAndTextureName
-    {
-        public static (string tex, byte ver) GetTextureNamenadVersion(string name)
-        {
-            int braceIndex = name.IndexOf("(");
-
-            if (braceIndex < 0) return (GetProperName(name), 0);
-
-            string properNmae = GetProperName(name.Substring(0, braceIndex));
-            byte version = Convert.ToByte(name.Substring(braceIndex + 1, name.IndexOf(")") - braceIndex - 1));
-
-            return (properNmae, version);
-        }
-
-        public static string GetProperName(string name)
-        {
-            const char SPACEBAR = (char)32;
-            string newName = String.Empty;
-
-            foreach (string word in name.Split(new char[1] { SPACEBAR }, StringSplitOptions.RemoveEmptyEntries))
-            {
-                newName += word;
-            }
-
-            return newName;
-        }
-
-        public static int GetAnimAndTextureNameMain()
-        {
-            string anim1 = "Forge";
-            string anim2 = "Royal Chamber";
-            string tex1 = "Countryside";
-            string tex2 = "Woods(1)";
-            string tex3 = "Royal Chamber(13)";
-
-            Console.WriteLine($"Anim \"{anim1}\" become \"{GetProperName(anim1)}\"");
-            Console.WriteLine($"Anim \"{anim2}\" become \"{GetProperName(anim2)}\"");
-            var (tex, ver) = ((string)null, (byte)0);
-            (tex, ver) = GetTextureNamenadVersion(tex1); Console.WriteLine($"Tex \"{tex1}\" become \"{tex}\", ver {ver}");
-            (tex, ver) = GetTextureNamenadVersion(tex2); Console.WriteLine($"Tex \"{tex2}\" become \"{tex}\", ver {ver}");
-            (tex, ver) = GetTextureNamenadVersion(tex3); Console.WriteLine($"Tex \"{tex3}\" become \"{tex}\", ver {ver}");
-
-            Console.ReadKey();
-            return 0;
-        }
-    }
-    public static class PlayerPosition
-    {
-        private static string path;
-        private static int method;
-
-        private const string FILE_NAME = "Noitisop.txt";
-
-        public static void PlayerPositionMain()
-        {
-            PlayerPosition.Start();
-
-            Console.WriteLine(PlayerPosition.ReadCurrentPosition());
-            Console.WriteLine(PlayerPosition.ReadPrecedingAnimation());
-            Console.WriteLine(PlayerPosition.ReadBackgroundPicture());
-            Console.WriteLine(PlayerPosition.ReadBackgroundMusic());
-            Console.WriteLine(PlayerPosition.ReadBackgroundSounds());
-
-            Console.WriteLine($"Path: {path}");
-        }
-
-        public static void Start()
-        {
-            path = $"{AppContext.BaseDirectory}/{FILE_NAME}";
-        }
-
-        public static string ReadCurrentPosition()
-        {
-            return ReadInfo(InfoType.CurrentPosition);
-        }
-
-        public static string ReadPrecedingAnimation()
-        {
-            return ReadInfo(InfoType.PrecedingAnimation);
-        }
-
-        public static string ReadBackgroundPicture()
-        {
-            return ReadInfo(InfoType.BackgroundPicture);
-        }
-
-        public static string ReadBackgroundMusic()
-        {
-            return ReadInfo(InfoType.BackgroundMusic);
-        }
-
-        public static string ReadBackgroundSounds()
-        {
-            return ReadInfo(InfoType.BackgroundSounds);
-        }
-
-        public static void WriteCurrentPosition(string info)
-        {
-            WriteInfo(InfoType.CurrentPosition, info);
-        }
-
-        public static void WritePrecedingAnimation(string info)
-        {
-            WriteInfo(InfoType.PrecedingAnimation, info);
-        }
-
-        public static void WriteBackgroundPicture(string info)
-        {
-            WriteInfo(InfoType.BackgroundPicture, info);
-        }
-
-        public static void WriteBackgroundMusic(string info)
-        {
-            WriteInfo(InfoType.BackgroundMusic, info);
-        }
-
-        public static void WriteBackgroundSounds(string info)
-        {
-            WriteInfo(InfoType.BackgroundSounds, info);
-        }
-
-
-        private static string ReadInfo(InfoType infoType)
-        {
-            if (!CheckFile()) CreateFile();
-            return File.ReadAllLines(path)[(byte)infoType].Trim();
-        }
-
-        private static void WriteInfo(InfoType infoType, string info)
-        {
-            if (!CheckFile()) CreateFile();
-            if (info is null || info == String.Empty) return;
-            string[] fileData = File.ReadAllLines(path);
-            fileData[(byte)infoType] = info.Trim();
-            File.WriteAllLines(path, fileData);
-        }
-
-        public static void CreateFile()
-        {
-            if (!CheckFile())
-            {
-                File.WriteAllBytes(path, new byte[0]);
-                method = 1;
-            }
-            if (!CheckFile())
-            {
-                File.Create(path);
-                method = 2;
-            }
-            if (!CheckFile())
-            {
-                using (var fstream = File.OpenWrite(path))
-                {
-                    fstream.Write(new byte[0], 0, 1);
-                    fstream.Close();
-                }
-                method = 3;
-            }
-            if (!CheckFile())
-            {
-                using (var sw = File.AppendText(path))
-                {
-                    sw.Write(String.Empty);
-                    sw.Close();
-                }
-                method = 4;
-            }
-
-            File.WriteAllLines(path, GetDefaults());
-        }
-
-        public static void DeleteFile()
-        {
-            if (CheckFile()) File.Delete(path);
-        }
-
-        public static bool CheckFile()
-        {
-            return File.Exists(path);
-        }
-
-        public static string GetPath()
-        {
-            return $"{path} m.{method}";
-        }
-
-        private static string[] GetDefaults()
-        {
-            string[] defaults = new string[5];
-
-            defaults[(byte)InfoType.CurrentPosition] = "01/01/01/01/00/00/00/00/1";
-            defaults[(byte)InfoType.PrecedingAnimation] = "Countryside";
-            defaults[(byte)InfoType.BackgroundPicture] = "Countryside";
-            defaults[(byte)InfoType.BackgroundMusic] = "Contemplating Flute";
-            defaults[(byte)InfoType.BackgroundSounds] = "";
-
-            return defaults;
-        }
-
-        private enum InfoType : byte
-        {
-            CurrentPosition = 0,
-            PrecedingAnimation = 1,
-            BackgroundPicture = 2,
-            BackgroundMusic = 3,
-            BackgroundSounds = 4
-        }
-    }
-    public static class TestForVsForeach
-    {
-        const int Size = 1000000;
-        const int Iterations = 1000;
-
-        public static void TestForVsForeachMain()
-        {
-            var data = new List<double>();
-            var rand = new Random();
-
-            for (int i = 0; i < Size; i++)
-            {
-                data.Add(rand.NextDouble());
-            }
-
-            double correctSum = data.Sum();
-
-            var sw = Stopwatch.StartNew();
-            for (int i = 0; i < Iterations; i++)
-            {
-                double sum = 0;
-                for (int j = 0; j < data.Count; j++)
-                {
-                    sum += data[j];
-                }
-                if (Math.Abs(sum - correctSum) > 0.1)
-                {
-                    Console.WriteLine("Summation failed");
-                    return;
-                }
-            }
-            sw.Stop();
-            Console.WriteLine($"For loop: {sw.ElapsedMilliseconds}");
-
-            sw = Stopwatch.StartNew();
-            for (int i = 0; i < Iterations; i++)
-            {
-                double sum = 0;
-                foreach (double d in data)
-                {
-                    sum += d;
-                }
-                if (Math.Abs(sum - correctSum) > 0.1)
-                {
-                    Console.WriteLine("Summation failed");
-                    return;
-                }
-            }
-            sw.Stop();
-            Console.WriteLine($"Foreach loop: {sw.ElapsedMilliseconds}");
-        }
-    } //Not writen by me
-    public static class HashOfStringValue
-    {
-        public static void GetHashOfStringValueMain()
-        {
-            string text1 = "jakis tekst";
-            string text2 = "jakis inny tekst";
-            string text3 = "jakis tekst";
-
-            Console.WriteLine($"tekst1 = {text1}\t hash = {GetHashOfStringValue(text1)}");
-            Console.WriteLine($"tekst1 = {text1}\t hash = {GetHashOfStringValue(text1)}");
-            Console.WriteLine($"tekst2 = {text2}\t hash = {GetHashOfStringValue(text2)}");
-            Console.WriteLine($"tekst3 = {text3}\t hash = {GetHashOfStringValue(text3)}");
-        }
-
-        private static string GetHashOfStringValue(string text)
-        {
-            string hashValueString = String.Empty;
-
-            try
-            {
-                using var hash = MD5.Create();
-
-                byte[] stringValue = Encoding.UTF8.GetBytes(text.Trim());
-                byte[] hashValueBytes = hash.ComputeHash(stringValue);
-                hashValueString = BitConverter.ToString(hashValueBytes).Replace("-", String.Empty).Trim().ToUpper();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"Error: {e}");
-                hashValueString = "Error";
-            }
-
-            return hashValueString;
-        }
-    }
-    public static class UnlockedGraphicsTest
-    {
-        private const string DATA_DIRECTORY = @"C:\Users\nikod\Temp\CShartProject";
-        private const string FILE_NAME = "Seciohc.llfile";
-        private const uint ALLOWED_CHOICES = 2;
-        private const uint FILE_SIZE = (byte)31;
-        //choices
-
-        private static string path;
-        private static int method;
-        private static bool started = false;
-
-        public static void UnlockedGraphicsTestMain()
-        {
-            Start();
-            DeleteFile();
-            CreateFile();
-            string unlockedGraphics = GetUnlockedGraphics();
-            Console.WriteLine($"Unlocked before graphics = {unlockedGraphics}, wchich is {Convert.ToUInt32(unlockedGraphics, 2)}");
-
-            AddUnlockedGraphic(GraphicName.RoyalChamber);
-            AddUnlockedGraphic(GraphicName.LostLegacy);
-
-            unlockedGraphics = GetUnlockedGraphics();
-            Console.WriteLine($"Unlocked after graphics = {unlockedGraphics}, wchich is {Convert.ToUInt32(unlockedGraphics, 2)}");
-        }
-
-        public static void Start()
-        {
-            if (started) return;
-
-            path = Path.Combine(DATA_DIRECTORY, FILE_NAME);
-
-            started = true;
-        }
-
-        public static string GetUnlockedGraphics()
-        {
-            const int MAX_NUMBER = (int)GraphicName.LostLegacy;
-            uint unlockeduint = Get(Field.UnlockedPictures);
-            string unlockedString = Convert.ToString(unlockeduint, 2);
-
-            var fullUnlockedString = new StringBuilder(MAX_NUMBER);
-
-            int missingZeros = MAX_NUMBER - unlockedString.Length;
-            for (int i = 0; i < missingZeros; ++i)
-            {
-                fullUnlockedString.Append("0");
-            }
-            fullUnlockedString.Append(unlockedString);
-
-            return fullUnlockedString.ToString();
-        }
-
-        public static void AddUnlockedGraphic(GraphicName graphic)
-        {
-            string unlocked = GetUnlockedGraphics();
-            int graphicNumber = (int)graphic - 1;
-            var newUnlocked = new StringBuilder((int)GraphicName.LostLegacy);
-
-            for (int i = 0; i < unlocked.Length; ++i)
-            {
-                if (i == graphicNumber) newUnlocked.Append("1");
-                else newUnlocked.Append(unlocked[i]);
-            }
-
-            uint newValue = Convert.ToUInt32(newUnlocked.ToString(), 2);
-            Set(Field.UnlockedPictures, newValue);
-        }
-
-        public static void AddAllowedMove()
-        {
-            uint moves = GetAllowedMoves();
-            Set(Field.AllowedMoves, ++moves);
-        }
-
-        private static uint GetAllowedMoves()
-        {
-            return Get(Field.AllowedMoves);
-        }
-
-        public static bool IsMoveAllowed()
-        {
-            return GetAllowedMoves() < ALLOWED_CHOICES;
-        }
-
-        public static void Set(Field field, uint value)
-        {
-            if (!CheckFile()) CreateFile();
-
-            string[] Lines = File.ReadAllLines(path);
-            Lines[(uint)field - 1] = value.ToString();
-            File.WriteAllLines(path, Lines);
-        }
-
-        public static uint Get(Field field)
-        {
-            if (!CheckFile()) return 1;
-
-            int data = Convert.ToInt32(File.ReadAllLines(path)[(byte)field - 1]);
-            return data < 0 ? (uint)1 : (uint)data;
-        }
-
-        public static void CreateFile()
-        {
-            if (!CheckFile())
-            {
-                File.WriteAllBytes(path, new byte[0]);
-                method = 1;
-            }
-            if (!CheckFile())
-            {
-                File.Create(path);
-                method = 2;
-            }
-            if (!CheckFile())
-            {
-                using (var fstream = File.OpenWrite(path))
-                {
-                    fstream.Write(new byte[0], 0, 1);
-                    fstream.Close();
-                }
-                method = 3;
-            }
-            if (!CheckFile())
-            {
-                using (var sw = File.AppendText(path))
-                {
-                    sw.Write(String.Empty);
-                    sw.Close();
-                }
-                method = 4;
-            }
-            File.WriteAllLines(path, GetDefaultFile());
-        }
-
-        private static string[] GetDefaultFile()
-        {
-            string[] newLines = new string[FILE_SIZE];
-
-            for (byte i = 0; i < FILE_SIZE - 2; ++i)
-            {
-                newLines[i] = "1";
-            }
-            newLines[(int)Field.AllowedMoves - 1] = "0";
-            newLines[(int)Field.UnlockedPictures - 1] = "0";
-
-            return newLines;
-        }
-
-        public static void DeleteFile()
-        {
-            if (CheckFile()) File.Delete(path);
-        }
-
-        public static bool CheckFile()
-        {
-            return File.Exists(path);
-        }
-
-        public static string GetPath()
-        {
-            return $"{path} m.{method}";
-        }
-
-        public enum Field : uint
-        {
-            Choice1 = 1,
-            Choice2 = 2,
-            Choice3 = 3,
-            Choice4 = 4,
-            Choice5 = 5,
-            Choice6 = 6,
-            Choice7 = 7,
-            Choice8 = 8,
-            Choice9 = 9,
-            Choice10 = 10,
-            Choice11 = 11,
-            Choice12 = 12,
-            Choice13 = 13,
-            Choice14 = 14,
-            Choice15 = 15,
-            Choice16 = 16,
-            Choice17 = 17,
-            Choice18 = 18,
-            Choice19 = 19,
-            Choice20 = 20,
-            Choice21 = 21,
-            Choice22 = 22,
-            Choice23 = 23,
-            Choice24 = 24,
-            Choice25 = 25,
-            Choice26 = 26,
-            Choice27 = 27,
-            Choice28 = 28,
-            Choice29 = 29,
-            AllowedMoves = 30,
-            UnlockedPictures = 31
-        }
-        public enum GraphicName : uint
-        {
-            Countryside = 1,
-            Inn = 2,
-            Forge = 3,
-            Market = 4,
-            Shrine = 5,
-            Harbor = 6,
-            Whorehouse = 7,
-            Riverport = 8,
-            Merchants = 9,
-            Underworld = 10,
-            Suburbia = 11,
-            Province = 12,
-            Churchyard = 13,
-            Dungeons = 14,
-            Woods = 15,
-            Forest = 16,
-            Ballroom = 17,
-            RoyalChamber = 18,
-            LostLegacy = 19
-        }
-    }
-    public static class BabiesBirthdayProblem
-    {
-        public static void BabiesBirthdayProblemMain()
-        {
-            const int DAYS = 365;
-            const double INVERSE_DAYS = 1.0 / DAYS;
-
-            double partialChance = 100.0;
-            for (int i = 0; i < DAYS; ++i)
-            {
-                partialChance *= (DAYS - i) * INVERSE_DAYS;
-                Console.WriteLine($"{i + 1}\tbabies have {(100.0 - partialChance):n6}% chance of sharing the same birthday");
-            }
-        }
-    }
     public static class MyOwnShuffle
     {
         private static readonly Random rand = new();
@@ -926,14 +20,14 @@ namespace CSharpTestProject
         public static void MyOwnShuffleMain()
         {
             var stringArray = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" };
-            
+
             PrintArrayIndexed(stringArray.Shuffle());
         }
 
-        private static void PrintArrayIndexed<T>(T[] arr) 
+        private static void PrintArrayIndexed<T>(T[] arr)
         {
-            for(int i = 1; i <= arr.Length; i++)
-            { 
+            for (int i = 1; i <= arr.Length; i++)
+            {
                 Console.WriteLine($"{i}.\t{arr[i]}");
             }
         }
@@ -953,6 +47,7 @@ namespace CSharpTestProject
             return arr;
         }
     }
+
     public static class Printer
     {
         public static void Print<T>(this T[] arr)
@@ -1059,7 +154,536 @@ namespace CSharpTestProject
             Console.WriteLine(sb.ToString());
         }
     }
-    public static class FckngListNodes
+
+    public class Human : IStartable
+    {
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                if (String.IsNullOrEmpty(value)) return;
+                _name = value;
+            }
+        }
+        public string Surname { get; set; }
+        public string PersonalID { get; init; }
+
+        private string _name;
+        public Human()
+        {
+            Console.WriteLine("I'm alive!!!!!!11!1!!111!");
+        }
+
+        public Human(string name, string surname, string personalID)
+            : this()
+        {
+            this.Name = name;
+            this.Surname = surname;
+            this.PersonalID = personalID;
+        }
+
+        private string GetHumanInfo()
+        {
+            return $"Imie = {Name}, nazwisko = {Surname}  (id = {PersonalID})";
+        }
+
+        public void Start()
+        {
+            var czlek1 = new Human("Marek", "Hucz", "1234");
+            var czlek2 = new Human
+            {
+                Name = "Janek",
+                Surname = "Hucz",
+                PersonalID = "4321"
+            };
+            Console.WriteLine(czlek1.GetHumanInfo());
+
+            czlek1.Name = "Rafał";
+            czlek1.Surname = "Nierafał";
+
+            Console.WriteLine(czlek1.GetHumanInfo());
+        }
+    }
+
+    public class ZeroDivision : IStartable
+    {
+        public void Start()
+        {
+            const float x = 10f;
+            const float zero = 0f;
+            float result = x / zero;
+            int result2 = 3;
+
+            try
+            {
+                Math.DivRem((int)x, (int)zero, out result2);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            Console.WriteLine($"Result = {result}, Result2 = {result2},  10f/0f = {10f / 0f}");
+
+            var v = new { Amount = 108, Message = "Hello" };
+
+            Console.WriteLine($"v: {v}, \nType: {v.GetType()}, \nHash: {v.GetHashCode()}");
+        }
+    }
+
+    public class GetLineFromString : IStartable
+    {
+        public void Start()
+        {
+            string content = GetLongContent(100_000);
+
+            const uint line = 500;
+            Console.WriteLine($"(Alg 1) Linijka {line}: {GetLine1(content, line, out long time1)}");
+            Console.WriteLine($"(Alg 2) Linijka {line}: {GetLine2(content, line, out long time2)}");
+            Console.WriteLine($"(Alg 3) Linijka {line}: {GetLine3(content, line, out long time3)}");
+
+            Console.WriteLine($"Alg 1 czas: {time1}");
+            Console.WriteLine($"Alg 2 czas: {time2}");
+            Console.WriteLine($"Alg 3 czas: {time3}");
+        }
+
+        private string GetLongContent(int length)
+        {
+            var sb = new StringBuilder(length);
+
+            for (int i = 1; i <= length; i++)
+            {
+                sb.Append(i).Append('\n');
+            }
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Returns string containing a specified line <1, 2, ...> from whole string
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="lineNumber"></param>
+        /// <returns name="line"></returns>
+        private string GetLine1(in string text, uint lineNumber, out long time)
+        {
+            var watch = new Stopwatch();
+            time = 0;
+
+            watch.Start();
+            if (lineNumber < 1) return String.Empty;
+
+            int count = 1;
+            int i;
+            foreach (char c in text)
+            {
+                if (c == '\n') ++count;
+            }
+
+            if (lineNumber > count) return String.Empty;
+
+            int[] indexesOfEnter = new int[count + 1];
+            indexesOfEnter[0] = -1;
+
+            count = 1;
+            for (i = 0; i < text.Length; ++i)
+            {
+                if (text[i] == '\n')
+                {
+                    indexesOfEnter[count] = i;
+                    ++count;
+                }
+            }
+            indexesOfEnter[count] = text.Length;
+
+            int startIndex = indexesOfEnter[lineNumber - 1] + 1;
+            int lenght = indexesOfEnter[lineNumber] - startIndex;
+            string line = text.Substring(startIndex, lenght);
+            watch.Stop();
+
+            time = watch.ElapsedMilliseconds;
+            return line;
+        }
+
+        /// <summary>
+        /// Returns string containing a specified line <1, 2, ...> from whole string
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="lineNumber"></param>
+        /// <returns name="line"></returns>
+        private string GetLine2(string text, uint lineNumber, out long time)
+        {
+            var watch = new Stopwatch();
+            time = 0;
+
+            watch.Start();
+            if (lineNumber < 1) return String.Empty;
+
+            string line = text;
+
+            for (int i = 0; i < lineNumber; ++i)
+            {
+                int indexOfNewLine = text.IndexOf('\n');
+                int textLenght = text.Length;
+                bool hasNewLine = indexOfNewLine != -1;
+                int indexOfEndline = (hasNewLine ? indexOfNewLine : textLenght);
+                line = text.Substring(0, indexOfEndline);
+                if (hasNewLine) text = text.Substring(indexOfEndline + 1, textLenght - line.Length - 1);
+                else break;
+            }
+            watch.Stop();
+
+            time = watch.ElapsedMilliseconds;
+            return line;
+        }
+
+        /// <summary>
+        /// Returns string containing a specified line <1, 2, ...> from whole string
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="lineNumber"></param>
+        /// <returns name="line"></returns>
+        private string GetLine3(string text, uint lineNumber, out long time)
+        {
+            var watch = new Stopwatch();
+            time = 0;
+
+            watch.Start();
+            if (lineNumber < 1) return String.Empty;
+
+            string[] textFileArray = text.Split('\n');
+
+            if (lineNumber > textFileArray.Length) return String.Empty;
+            watch.Stop();
+
+            time = watch.ElapsedMilliseconds;
+            return textFileArray[lineNumber - 1];
+        }
+    }
+
+    public class DownloadTest : IStartable
+    {
+        private static readonly Dictionary<ulong, string> metricPrefixes = new Dictionary<ulong, string>
+            {
+                { 1, "B" },
+                { 1_000, "kB" },
+                { 1_000_000, "MB" },
+                { 1_000_000_000, "GB" },
+                { 1_000_000_000_000, "TB" },
+                { 1_000_000_000_000_000, "PB" }
+            };
+
+        private static readonly string[] TEST_URLS = new string[]
+            {
+                    @"https://example.com/",
+                    @"https://example.org/",
+                    //@"https://play.google.com/store",
+                    @"https://drive.google.com/uc?export=download&id=1P8gf5-DEvSYpFhGDylD6u5yiLXfY8B7T",
+                    @"https://drive.google.com/uc?export=download&id=17Y-obCuaHYbP3dtjkiLYO66SB8UjFQ3f",
+                    @"https://www.blank.org/"
+            };
+
+
+        public void Start()
+        {
+            var datas = new byte[TEST_URLS.Length][];
+            
+            using (var client = new WebClient())
+            {
+                for (int i = 0; i < TEST_URLS.Length; i++)
+                {
+                    datas[i] = client.DownloadData(TEST_URLS[i]);
+                    Console.WriteLine($"{TEST_URLS[i]} done");
+                }
+            }
+
+            for (int i = 0; i < TEST_URLS.Length; i++)
+            {
+                Console.WriteLine($"Size of site {TEST_URLS[i]} = {GetHumanReadableSize((ulong)datas[i].Length)}  ({datas[i].Length})");
+            }
+        }
+
+        private string GetHumanReadableSize(ulong size)
+        {
+            foreach (var k in metricPrefixes.Keys)
+            {
+                if (size < k * 1000)
+                {
+                    string prefix = metricPrefixes[k];
+                    if (prefix == "B")
+                    {
+                        return $"{((double)size / k):n0}{prefix}";
+                    }
+                    else
+                    {
+                        return $"{((double)size / k):n2}{prefix}";
+                    }
+                }
+            }
+            return $"{size}B";
+        }
+    }
+
+    public class ArrayArithetic : IStartable
+    {
+        private static readonly int MAX = 100000;
+
+        private int LongMultiply(int x, byte[] res, int res_size)
+        {
+            int carry = 0;
+
+            for (int i = 0; i < res_size; ++i)
+            {
+                int prod = res[i] * x + carry;
+                res[i] = (byte)(prod % 10);
+                carry = prod / 10;
+            }
+
+            while (carry > 0)
+            {
+                res[res_size] = (byte)(carry % 10);
+                carry /= 10;
+                ++res_size;
+            }
+
+            return res_size;
+        }
+
+        private void LongPow(int x, int n)
+        {
+            if (n == 0)
+            {
+                Console.Write("1");
+                return;
+            }
+
+            byte[] res = new byte[MAX];
+            int res_size = 0;
+            int temp = x;
+
+            while (temp != 0)
+            {
+                res[res_size++] = (byte)(temp % 10);
+                temp /= 10;
+            }
+
+            for (int i = 2; i <= n; i++) res_size = LongMultiply(x, res, res_size);
+
+            Console.Write($"{x}^{n} = "); for (int i = res_size - 1; i >= 0; i--) Console.Write(res[i]);
+        }
+
+        public void Start()
+        {
+            LongPow(7, 777);
+        }
+    } //Not writen by me
+
+    public class StringToTitle : IStartable
+    {
+        private string ToTitle(string oldName)
+        {
+            string name = String.Empty;
+            foreach (string w in oldName.Split('_'))
+            {
+                name += Convert.ToString(w[0]).ToUpper() + w.Substring(1) + " ";
+            }
+
+            return name.Trim();
+        }
+
+        public void Start()
+        {
+            string oldName = "Lost_legacy_lala";
+            string newName = ToTitle(oldName);
+
+            Console.WriteLine($"Name = {newName}");
+        }
+    }
+
+    public class SoundsExtractor : IStartable
+    {
+        private string[] ExtractSounds(string line)
+        {
+            string[] sounds = line.Split(new char[1] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+            for (byte i = 0; i < sounds.Length; ++i)
+            {
+                sounds[i] = sounds[i].Trim();
+            }
+
+            return sounds;
+        }
+
+        public void Start()
+        {
+            string data1 = "Wind Light, Rain Medium, Waterfall, Fireplace";
+            string data2 = "Scream,,";
+            string data3 = "";
+
+            string[] sounds1 = ExtractSounds(data1);
+            string[] sounds2 = ExtractSounds(data2);
+            string[] sounds3 = ExtractSounds(data3);
+
+            Console.Write($"Sounds in data1: "); foreach (string s in sounds1) { Console.Write($"\"{s}\" "); }
+            Console.WriteLine();
+            Console.Write($"Sounds in data2: "); foreach (string s in sounds2) { Console.Write($"\"{s}\" "); }
+            Console.WriteLine();
+            Console.Write($"Sounds in data3: "); foreach (string s in sounds3) { Console.Write($"\"{s}\" "); }
+            Console.WriteLine();
+        }
+    }
+
+    public class GetAnimAndTextureName : IStartable
+    {
+        private (string tex, byte ver) GetTextureNamenadVersion(string name)
+        {
+            int braceIndex = name.IndexOf("(");
+
+            if (braceIndex < 0) return (GetProperName(name), 0);
+
+            string properNmae = GetProperName(name.Substring(0, braceIndex));
+            byte version = Convert.ToByte(name.Substring(braceIndex + 1, name.IndexOf(")") - braceIndex - 1));
+
+            return (properNmae, version);
+        }
+
+        private string GetProperName(string name)
+        {
+            const char SPACEBAR = (char)32;
+            string newName = String.Empty;
+
+            foreach (string word in name.Split(new char[1] { SPACEBAR }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                newName += word;
+            }
+
+            return newName;
+        }
+
+        public void Start()
+        {
+            string anim1 = "Forge";
+            string anim2 = "Royal Chamber";
+            string tex1 = "Countryside";
+            string tex2 = "Woods(1)";
+            string tex3 = "Royal Chamber(13)";
+
+            Console.WriteLine($"Anim \"{anim1}\" become \"{GetProperName(anim1)}\"");
+            Console.WriteLine($"Anim \"{anim2}\" become \"{GetProperName(anim2)}\"");
+            var (tex, ver) = ((string)null, (byte)0);
+            (tex, ver) = GetTextureNamenadVersion(tex1); Console.WriteLine($"Tex \"{tex1}\" become \"{tex}\", ver {ver}");
+            (tex, ver) = GetTextureNamenadVersion(tex2); Console.WriteLine($"Tex \"{tex2}\" become \"{tex}\", ver {ver}");
+            (tex, ver) = GetTextureNamenadVersion(tex3); Console.WriteLine($"Tex \"{tex3}\" become \"{tex}\", ver {ver}");
+        }
+    }
+
+    public class TestForVsForeach : IStartable
+    {
+        const int Size = 1000000;
+        const int Iterations = 1000;
+
+        public void Start()
+        {
+            var data = new List<double>();
+            var rand = new Random();
+
+            for (int i = 0; i < Size; i++)
+            {
+                data.Add(rand.NextDouble());
+            }
+
+            double correctSum = data.Sum();
+
+            var sw = Stopwatch.StartNew();
+            for (int i = 0; i < Iterations; i++)
+            {
+                double sum = 0;
+                for (int j = 0; j < data.Count; j++)
+                {
+                    sum += data[j];
+                }
+                if (Math.Abs(sum - correctSum) > 0.1)
+                {
+                    Console.WriteLine("Summation failed");
+                    return;
+                }
+            }
+            sw.Stop();
+            Console.WriteLine($"For loop: {sw.ElapsedMilliseconds}");
+
+            sw = Stopwatch.StartNew();
+            for (int i = 0; i < Iterations; i++)
+            {
+                double sum = 0;
+                foreach (double d in data)
+                {
+                    sum += d;
+                }
+                if (Math.Abs(sum - correctSum) > 0.1)
+                {
+                    Console.WriteLine("Summation failed");
+                    return;
+                }
+            }
+            sw.Stop();
+            Console.WriteLine($"Foreach loop: {sw.ElapsedMilliseconds}");
+        }
+    } //Not writen by me
+
+    public class HashOfStringValue : IStartable
+    {
+        public void Start()
+        {
+            string text1 = "jakis tekst";
+            string text2 = "jakis inny tekst";
+            string text3 = "jakis tekst";
+
+            Console.WriteLine($"tekst1 = {text1}\t hash = {GetHashOfStringValue(text1)}");
+            Console.WriteLine($"tekst1 = {text1}\t hash = {GetHashOfStringValue(text1)}");
+            Console.WriteLine($"tekst2 = {text2}\t hash = {GetHashOfStringValue(text2)}");
+            Console.WriteLine($"tekst3 = {text3}\t hash = {GetHashOfStringValue(text3)}");
+        }
+
+        private string GetHashOfStringValue(string text)
+        {
+            string hashValueString = String.Empty;
+
+            try
+            {
+                using var hash = MD5.Create();
+
+                byte[] stringValue = Encoding.UTF8.GetBytes(text.Trim());
+                byte[] hashValueBytes = hash.ComputeHash(stringValue);
+                hashValueString = BitConverter.ToString(hashValueBytes).Replace("-", String.Empty).Trim().ToUpper();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error: {e}");
+                hashValueString = "Error";
+            }
+
+            return hashValueString;
+        }
+    }
+
+    public class BabiesBirthdayProblem : IStartable
+    {
+        public void Start()
+        {
+            const int DAYS = 365;
+            const double INVERSE_DAYS = 1.0 / DAYS;
+
+            double partialChance = 100.0;
+            for (int i = 0; i < DAYS; ++i)
+            {
+                partialChance *= (DAYS - i) * INVERSE_DAYS;
+                Console.WriteLine($"{i + 1}\tbabies have {(100.0 - partialChance):n6}% chance of sharing the same birthday");
+            }
+        }
+    }
+
+    public class FckngListNodes : IStartable
     {
         const int MAX = 10000;
 
@@ -1136,7 +760,7 @@ namespace CSharpTestProject
             Console.WriteLine(sb.ToString());
         }
 
-        public static void FckngListNodesMain()
+        public void Start()
         {
             ListNode<int> a = IntLinkedListCreator.CreateListNode("[1]");
             ListNode<int> b = IntLinkedListCreator.CreateListNode("[9999, 9999]");
@@ -1145,7 +769,7 @@ namespace CSharpTestProject
             PrintLinkedList(S_RearrangeLastN(l, 6));
         }
 
-        private static ListNode<int> S_Reverse_WithoutColections(ListNode<int> l)
+        private ListNode<int> S_Reverse_WithoutColections(ListNode<int> l)
         {
             ListNode<int> curr = l;
             ListNode<int> prev = null;
@@ -1161,7 +785,7 @@ namespace CSharpTestProject
             return prev;
         }
 
-        private static ListNode<int> S_Revers_WithStack(ListNode<int> l)
+        private ListNode<int> S_Revers_WithStack(ListNode<int> l)
         {
             if (l is null) return null;
             if (l.next is null) return l;
@@ -1197,7 +821,7 @@ namespace CSharpTestProject
             return head;
         }
 
-        private static ListNode<int> S_Reverse_WithList(ListNode<int> l)
+        private ListNode<int> S_Reverse_WithList(ListNode<int> l)
         {
             if (l is null) return null;
 
@@ -1222,7 +846,7 @@ namespace CSharpTestProject
             return newHead;
         }
 
-        private static ListNode<int> S_RearrangeLastN(ListNode<int> l, int n)
+        private ListNode<int> S_RearrangeLastN(ListNode<int> l, int n)
         {
             if (n <= 0) return l;
 
@@ -1258,7 +882,7 @@ namespace CSharpTestProject
             return head;
         }
         
-        private static ListNode<int> S_ReverseGroupsOfK(ListNode<int> l, int k)
+        private ListNode<int> S_ReverseGroupsOfK(ListNode<int> l, int k)
         {
             if (k <= 1) return l;
 
@@ -1301,7 +925,7 @@ namespace CSharpTestProject
             return head;
         }
 
-        private static ListNode<int> S_SumHugeNumber(ListNode<int> a, ListNode<int> b)
+        private ListNode<int> S_SumHugeNumber(ListNode<int> a, ListNode<int> b)
         {
             const int MAX = 10000;
 
@@ -1384,10 +1008,11 @@ namespace CSharpTestProject
             return result;
         }
     }
-    public static class Matrices
+
+    public class Matrices : IStartable
     {
         static int count = 0;
-        public static void MatricesMain()
+        public void Start()
         {
             var matrix1 = new int[6][]
             {
@@ -1402,7 +1027,7 @@ namespace CSharpTestProject
             RemoveIslands(matrix1).Print();
         }
 
-        private static int[][] RemoveIslands(int[][] m)
+        private int[][] RemoveIslands(int[][] m)
         {
             count = 0;
             int xLen = m.Length;
@@ -1439,7 +1064,7 @@ namespace CSharpTestProject
             return m;
         }
 
-        private static void RemoveIsnaldsRecursive(int[][] m, int x, int y, bool[][] keep)
+        private void RemoveIsnaldsRecursive(int[][] m, int x, int y, bool[][] keep)
         {
             count++;
             if (m[x][y] == 1) keep[x][y] = true;
@@ -1463,9 +1088,9 @@ namespace CSharpTestProject
         }
     }
 
-    public static class Sequences
+    public class Sequences : IStartable
     {
-        public static void SequencesMain()
+        public void Start()
         {
             int[] seq1 = { 1, 2, 3, 4, 5, 6 };
             int[] seq2 = { 1, 2, 5, 3, 5 };
@@ -1478,7 +1103,7 @@ namespace CSharpTestProject
             Console.WriteLine($"seq4: expected = {IsStrictlyIncreasingShitty(seq4)}, actual = {IsStrictlyIncreasing(seq4)}");
         }
 
-        private static bool IsStrictlyIncreasingShitty(int[] sequence)
+        private bool IsStrictlyIncreasingShitty(int[] sequence)
         {
             int length = sequence.Length;
             for (int i = 0; i < length; i++)
@@ -1499,7 +1124,7 @@ namespace CSharpTestProject
         }
 
 
-        private static bool IsStrictlyIncreasing(int[] sequence)
+        private bool IsStrictlyIncreasing(int[] sequence)
         {
             const int MAX_SWAPS = 1;
 
@@ -1525,7 +1150,7 @@ namespace CSharpTestProject
             return true;
         }
 
-        private static bool IsStrictlyIncreasingFailed(int[] sequence)
+        private bool IsStrictlyIncreasingFailed(int[] sequence)
         {
             const int MAX_SWAPS = 1;
 
@@ -1566,12 +1191,12 @@ namespace CSharpTestProject
 
     public class Program
     {
-        public static int Main()
+        public static void Main()
         {
-            Sequences.SequencesMain();
+            IStartable startable = new ZeroDivision();
+            startable.Start();
 
             Console.ReadKey();
-            return 0;
         }
     }
 }

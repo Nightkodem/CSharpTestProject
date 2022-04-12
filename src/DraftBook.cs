@@ -10,12 +10,7 @@ public class DraftBook : IStartable
 
     public void Start()
     {
-        //byte[] data = Enumerable.Range(0, 128).Select(x => x).Cast<byte>().ToArray();
-        var data = new byte[128];
-        for (int i = 0; i < 128; i++)
-        {
-            data[i] = (byte)i;
-        }
+        byte[] data = Enumerable.Range(0, 128).Select(x => (byte)x).ToArray();
 
         Console.Write($"CRC = "); CRCNiemoje(data).Print();
         Console.Write($"Moje CRC = "); CRC(data).Print();

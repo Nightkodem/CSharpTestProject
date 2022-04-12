@@ -1,8 +1,7 @@
-﻿using System;
-using CSharpTestProject;
-using CSharpTestProject.FifteenPuzzle;
+﻿using CSharpTestProject;
+using System;
 
-IStartable startable = new AbsoluteValueTest();
+IStartable startable = new DraftBook();
 startable.Start();
 
 Console.ReadKey();

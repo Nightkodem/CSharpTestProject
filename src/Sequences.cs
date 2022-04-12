@@ -84,7 +84,7 @@ namespace CSharpTestProject
 
                     for (int j = i - 1; j >= 0; j--)
                     {
-                        if (value <= sequence[j]) 
+                        if (value <= sequence[j])
                         {
                             toRemove++;
                             break;

@@ -33,7 +33,7 @@ public struct Board : IEquatable<Board>
         : this()
     {
         int columnLength = board.Length;
-        
+
         if (columnLength <= 0) throw new ArgumentException("Board cannot be empty!");
 
         int rowLength = board[0].Length;

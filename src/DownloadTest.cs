@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Net;
 using System.Collections.Generic;
+using System.Net;
 
 namespace CSharpTestProject
 {
@@ -30,7 +30,7 @@ namespace CSharpTestProject
         public void Start()
         {
             var datas = new byte[TEST_URLS.Length][];
-            
+
             using (var client = new WebClient())
             {
                 for (int i = 0; i < TEST_URLS.Length; i++)

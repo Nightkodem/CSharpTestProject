@@ -202,7 +202,7 @@ public class FckngListNodes : IStartable
 
         return head;
     }
-    
+
     private ListNode<int> S_ReverseGroupsOfK(ListNode<int> l, int k)
     {
         if (k <= 1) return l;
@@ -227,7 +227,7 @@ public class FckngListNodes : IStartable
                     buff[i].next = buff[i - 1];
                 }
                 prev = buff[0];
-                
+
                 count = 0;
             }
             else count++;

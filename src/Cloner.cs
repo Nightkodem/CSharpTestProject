@@ -3,7 +3,7 @@ namespace CSharpTestProject;
 
 public static class Cloner
 {
-    public static T[] SingleArr<T>(T[] arr) where T : IConvertible
+    public static T[] SingleArr<T>(this T[] arr) where T : IConvertible
     {
         int xLength = arr.Length;
 
@@ -17,7 +17,7 @@ public static class Cloner
         return ret;
     }
 
-    public static T[][] DoubleArr<T>(T[][] arr) where T : IConvertible
+    public static T[][] DoubleArr<T>(this T[][] arr) where T : IConvertible
     {
         int xLength = arr.Length;
 

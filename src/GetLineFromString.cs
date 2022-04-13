@@ -8,9 +8,9 @@ namespace CSharpTestProject
     {
         public void Start()
         {
+            const uint line = 500;
             string content = GetLongContent(100_000);
 
-            const uint line = 500;
             Console.WriteLine($"(Alg 1) Linijka {line}: {GetLine1(content, line, out long time1)}");
             Console.WriteLine($"(Alg 2) Linijka {line}: {GetLine2(content, line, out long time2)}");
             Console.WriteLine($"(Alg 3) Linijka {line}: {GetLine3(content, line, out long time3)}");

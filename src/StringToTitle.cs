@@ -9,9 +9,8 @@ namespace CSharpTestProject
             string name = String.Empty;
             foreach (string w in oldName.Split('_'))
             {
-                name += Convert.ToString(w[0]).ToUpper() + w.Substring(1) + " ";
+                name += String.Concat(w[0].ToString().ToUpper(), w.AsSpan(1), " ");
             }
-
             return name.Trim();
         }
 

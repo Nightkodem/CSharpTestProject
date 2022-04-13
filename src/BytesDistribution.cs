@@ -16,6 +16,8 @@ public class BytesDistribution : IStartable
             bytes[b]++;
         }
 
+        Array.Sort(bytes);
+
         for (int i = 0; i < bytes.Length; i++)
         {
             Console.WriteLine($"Byte {i} appeared {bytes[i]} times");

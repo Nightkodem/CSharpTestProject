@@ -17,6 +17,7 @@ namespace CSharpTestProject
         public string PersonalID { get; init; }
 
         private string _name;
+
         public Human()
         {
             Console.WriteLine("I'm alive!!!!!!11!1!!111!");
